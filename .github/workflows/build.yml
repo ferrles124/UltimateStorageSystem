@@ -1,8 +1,10 @@
-name: Build Mod
+name: Build UltimateStorageSystem
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -10,24 +12,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout UltimateStorageSystem
         uses: actions/checkout@v4
+        with:
+          path: main-repo
 
-      - name: Setup .NET
+      - name: Checkout GiftMail (for game reference DLLs)
+        uses: actions/checkout@v4
+        with:
+          repository: ferrles124/GiftMail
+          ref: main
+          path: giftmail-repo
+
+      - name: Copy reference DLLs into project
+        run: |
+          mkdir -p main-repo/UltimateStorageSystem/UltimateStorageSystem/libs
+          cp giftmail-repo/StardewValley.dll main-repo/StardewValley.dll
+          cp giftmail-repo/libs/MonoGame.Framework.dll main-repo/UltimateStorageSystem/UltimateStorageSystem/libs/
+          cp giftmail-repo/libs/StardewModdingAPI.dll main-repo/UltimateStorageSystem/UltimateStorageSystem/libs/
+          cp giftmail-repo/libs/xTile.dll main-repo/UltimateStorageSystem/UltimateStorageSystem/libs/
+
+      - name: Setup .NET 6
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '6.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Check libs
+        run: |
+          ls -la main-repo/
+          ls -la main-repo/UltimateStorageSystem/UltimateStorageSystem/libs/
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build main-repo/UltimateStorageSystem/UltimateStorageSystem/UltimateStorageSystem.csproj --configuration Release
 
-      - name: Upload build artifact
+      - name: Prepare mod package
+        run: |
+          mkdir -p package/UltimateStorageSystem
+          cp main-repo/UltimateStorageSystem/UltimateStorageSystem/bin/Release/net6.0/UltimateStorageSystem.dll package/UltimateStorageSystem/
+          cp main-repo/UltimateStorageSystem/UltimateStorageSystem/manifest.json package/UltimateStorageSystem/ || true
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: UltimateStorageSystem-build
-          path: |
-            **/bin/Release/**/*.dll
-            **/bin/Release/**/manifest.json
+          name: UltimateStorageSystem
+          path: package/
+          retention-days: 30
