@@ -32,10 +32,10 @@ jobs:
           cp giftmail-repo/libs/StardewModdingAPI.dll main-repo/UltimateStorageSystem/UltimateStorageSystem/libs/
           cp giftmail-repo/libs/xTile.dll main-repo/UltimateStorageSystem/UltimateStorageSystem/libs/
 
-      - name: Setup .NET 6
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Check libs
         run: |
@@ -48,7 +48,7 @@ jobs:
       - name: Prepare mod package
         run: |
           mkdir -p package/UltimateStorageSystem
-          cp main-repo/UltimateStorageSystem/UltimateStorageSystem/bin/Release/net6.0/UltimateStorageSystem.dll package/UltimateStorageSystem/
+          cp main-repo/UltimateStorageSystem/UltimateStorageSystem/bin/Release/net8.0/UltimateStorageSystem.dll package/UltimateStorageSystem/
           cp main-repo/UltimateStorageSystem/UltimateStorageSystem/manifest.json package/UltimateStorageSystem/ || true
 
       - name: Upload artifact
