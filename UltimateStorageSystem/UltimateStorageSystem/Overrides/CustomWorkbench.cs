@@ -101,7 +101,7 @@ namespace UltimateStorageSystem.Overrides
                     // Centers the crafting menu on the screen
                     Vector2 centeringOnScreen = Utility.getTopLeftPositionForCenteringOnScreen(800 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2);
                     // Opens the crafting menu with the collected inventories
-                    Game1.activeClickableMenu = new CraftingPage((int)centeringOnScreen.X, (int)centeringOnScreen.Y, 800 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, standaloneMenu: true, materialContainers: inventories);
+                    Game1.activeClickableMenu = new CraftingPage((int)centeringOnScreen.X, (int)centeringOnScreen.Y, 800 + IClickableMenu.borderWidth * 2, 600 + IClickableMenu.borderWidth * 2, cooking: false, standaloneMenu: true, materialContainers: inventories);
                     // Sets a function to execute when the menu is closed
                     Game1.activeClickableMenu.exitFunction = () =>
                     {
