@@ -1,4 +1,4 @@
-﻿using StardewModdingAPI;
+using StardewModdingAPI;
 using StardewValley.Locations;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -117,11 +117,10 @@ namespace UltimateStorageSystem
                 Vector2 tile = e.Cursor.Tile;
                 if (IsFarmLinkTerminalOnTile(tile, out StardewValley.Object terminalObject))
                 {
-                    if (FarmLinkTerminal.IsPlayerBelowTileAndFacingUp(Game1.player, terminalObject.TileLocation))
-                    {
-                        ignoreNextRightClick = true;
-                        OpenFarmLinkTerminalMenu();
-                    }
+                    // FIX: Yön kısıtlaması kaldırıldı — artık terminale her komşu
+                    // kareden (alt/üst/sağ/sol) tıklayınca menü açılıyor.
+                    ignoreNextRightClick = true;
+                    OpenFarmLinkTerminalMenu();
                 }
             }
         }
