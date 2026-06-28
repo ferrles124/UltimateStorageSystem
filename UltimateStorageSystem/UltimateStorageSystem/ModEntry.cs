@@ -114,11 +114,11 @@ namespace UltimateStorageSystem
 
             if (Context.IsPlayerFree && e.Button.IsActionButton())
             {
-                Vector2 tile = e.Cursor.Tile;
-                if (IsFarmLinkTerminalOnTile(tile, out StardewValley.Object terminalObject))
+                // FIX: Haritayı genişleten modlarda cursor/tile koordinatları kaymış
+                // olabileceğinden, cursor konumuna güvenmek yerine doğrudan
+                // oyuncunun bulunduğu karenin etrafındaki tüm kareleri tarıyoruz.
+                if (IsFarmLinkTerminalNearPlayer(out StardewValley.Object terminalObject))
                 {
-                    // FIX: Yön kısıtlaması kaldırıldı — artık terminale her komşu
-                    // kareden (alt/üst/sağ/sol) tıklayınca menü açılıyor.
                     ignoreNextRightClick = true;
                     OpenFarmLinkTerminalMenu();
                 }
@@ -230,10 +230,29 @@ namespace UltimateStorageSystem
             }
         }
 
-        private bool IsFarmLinkTerminalOnTile(Vector2 tile, out StardewValley.Object terminalObject)
+        private bool IsFarmLinkTerminalNearPlayer(out StardewValley.Object terminalObject)
         {
-            return (Game1.currentLocation.objects.TryGetValue(tile, out terminalObject) && terminalObject.Name == farmLinkTerminalName) ||
-                   (Game1.currentLocation.objects.TryGetValue(tile + new Vector2(0, 1), out terminalObject) && terminalObject.Name == farmLinkTerminalName);
+            terminalObject = null;
+            GameLocation location = Game1.currentLocation;
+            Vector2 playerTile = Game1.player.Tile;
+
+            // Önce oyuncunun tam üzerinde bulunduğu kareyi kontrol et
+            if (location.objects.TryGetValue(playerTile, out terminalObject) && terminalObject.Name == farmLinkTerminalName)
+            {
+                return true;
+            }
+
+            // Sonra etrafındaki 8 komşu kareyi kontrol et (harita modlarından bağımsız çalışır)
+            foreach (var offset in AdjacentTilesOffsets)
+            {
+                Vector2 adjacentTile = playerTile + offset;
+                if (location.objects.TryGetValue(adjacentTile, out terminalObject) && terminalObject.Name == farmLinkTerminalName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void OpenFarmLinkTerminalMenu()
